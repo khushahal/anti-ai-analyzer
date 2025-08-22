@@ -179,54 +179,23 @@ export default function RealTimeFeed() {
       : allItems.filter(item => item.type === filter)
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Real-time Feed</h1>
-            <p className="text-gray-600 mt-1">Live monitoring of AI tool performance and activities</p>
-          </div>
+    <div className="space-y-4 sm:space-y-6">
+      {/* Mobile Connection Status */}
+      <div className="sm:hidden">
+        <div className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
           <div className="flex items-center space-x-2">
             {isConnected ? (
-              <Wifi className="h-5 w-5 text-success-600" />
+              <Wifi className="h-4 w-4 text-success-600" />
             ) : (
-              <WifiOff className="h-5 w-5 text-error-600" />
+              <WifiOff className="h-4 w-4 text-error-600" />
             )}
             <span className={`text-sm font-medium ${isConnected ? 'text-success-600' : 'text-error-600'}`}>
               {isConnected ? 'Connected' : 'Disconnected'}
             </span>
           </div>
-        </div>
-        
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={() => setShowReportModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-error-600 text-white rounded-lg hover:bg-error-700 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Report Mistake</span>
-          </button>
-          
-          <div className="flex items-center space-x-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
-            <Filter className="h-4 w-4 text-gray-400" />
-            <select 
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="text-sm border-none outline-none bg-transparent"
-            >
-              <option value="all">All Events</option>
-              <option value="user-report">User Reports</option>
-              <option value="mistake">System Mistakes</option>
-              <option value="performance">Performance</option>
-              <option value="update">Updates</option>
-              <option value="alert">Alerts</option>
-            </select>
-          </div>
-          
           <button 
             onClick={() => setIsConnected(!isConnected)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
               isConnected 
                 ? 'bg-error-100 text-error-700 hover:bg-error-200' 
                 : 'bg-success-100 text-success-700 hover:bg-success-200'
@@ -237,58 +206,168 @@ export default function RealTimeFeed() {
         </div>
       </div>
 
-      {/* Live Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Events Today</p>
-              <p className="text-2xl font-bold text-gray-900">{feedItems.length}</p>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Real-time Feed</h1>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">Live monitoring of AI tool performance and activities</p>
+          </div>
+          
+        </div>
+        
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+          <button
+            onClick={() => setShowReportModal(true)}
+            className="flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 bg-error-600 text-white rounded-lg hover:bg-error-700 transition-colors text-sm sm:text-base w-full sm:w-auto"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Report Mistake</span>
+          </button>
+          
+          <div className="flex items-center space-x-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
+            <Filter className="h-4 w-4 text-gray-400" />
+            <select 
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="text-sm border-none outline-none bg-transparent w-full sm:w-auto"
+            >
+              <option value="all">All Events</option>
+              <option value="user-report">User Reports</option>
+              <option value="mistake">System Mistakes</option>
+              <option value="performance">Performance</option>
+              <option value="update">Updates</option>
+              <option value="alert">Alerts</option>
+            </select>
+          </div>
+          
+          
+        </div>
+      </div>
+
+      {/* Mobile-Optimized Filter Section */}
+      <div className="sm:hidden">
+        <div className="card p-4">
+          <h3 className="text-sm font-medium text-gray-700 mb-3">Quick Filters</h3>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-3 py-2 text-xs rounded-lg transition-colors ${
+                filter === 'all' 
+                  ? 'bg-primary-100 text-primary-700 border border-primary-200' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              All Events
+            </button>
+            <button
+              onClick={() => setFilter('mistake')}
+              className={`px-3 py-2 text-xs rounded-lg transition-colors ${
+                filter === 'mistake' 
+                  ? 'bg-error-100 text-error-700 border border-error-200' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Mistakes
+            </button>
+            <button
+              onClick={() => setFilter('performance')}
+              className={`px-3 py-2 text-xs rounded-lg transition-colors ${
+                filter === 'performance' 
+                  ? 'bg-success-100 text-success-700 border border-success-200' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Performance
+            </button>
+            <button
+              onClick={() => setFilter('alert')}
+              className={`px-3 py-2 text-xs rounded-lg transition-colors ${
+                filter === 'alert' 
+                  ? 'bg-warning-100 text-warning-700 border border-warning-200' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Alerts
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Event Counter */}
+      <div className="sm:hidden">
+        <div className="bg-gradient-to-r from-primary-50 to-purple-50 border border-primary-200 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-primary-700">Today's Activity</h3>
+            <Activity className="h-5 w-5 text-primary-600" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary-700">{feedItems.length}</div>
+              <div className="text-xs text-primary-600">Total Events</div>
             </div>
-            <Activity className="h-8 w-8 text-primary-600" />
+            <div className="text-center">
+              <div className="text-2xl font-bold text-error-600">
+                {feedItems.filter(item => item.type === 'mistake').length}
+              </div>
+              <div className="text-xs text-error-600">Mistakes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Live Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="card p-3 sm:p-4">
+          <div className="flex items-center justify-between">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Events Today</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{feedItems.length}</p>
+            </div>
+            <Activity className="h-6 w-6 sm:h-8 sm:w-8 text-primary-600 flex-shrink-0" />
           </div>
         </div>
         
-        <div className="card">
+        <div className="card p-3 sm:p-4">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Mistakes</p>
-              <p className="text-2xl font-bold text-error-600">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Mistakes</p>
+              <p className="text-xl sm:text-2xl font-bold text-error-600">
                 {feedItems.filter(item => item.type === 'mistake').length}
               </p>
             </div>
-            <AlertTriangle className="h-8 w-8 text-error-600" />
+            <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-error-600 flex-shrink-0" />
           </div>
         </div>
         
-        <div className="card">
+        <div className="card p-3 sm:p-4">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Performance</p>
-              <p className="text-2xl font-bold text-success-600">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Performance</p>
+              <p className="text-xl sm:text-2xl font-bold text-success-600">
                 {feedItems.filter(item => item.type === 'performance').length}
               </p>
             </div>
-            <TrendingUp className="h-8 w-8 text-success-600" />
+            <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-success-600 flex-shrink-0" />
           </div>
         </div>
         
-        <div className="card">
+        <div className="card p-3 sm:p-4">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Alerts</p>
-              <p className="text-2xl font-bold text-warning-600">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Alerts</p>
+              <p className="text-xl sm:text-2xl font-bold text-warning-600">
                 {feedItems.filter(item => item.type === 'alert').length}
               </p>
             </div>
-            <AlertTriangle className="h-8 w-8 text-warning-600" />
+            <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-warning-600 flex-shrink-0" />
           </div>
         </div>
       </div>
 
       {/* Live Feed */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-4">
+      <div className="card p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
           <h3 className="text-lg font-semibold text-gray-900">Live Activity Feed</h3>
           <div className="flex items-center space-x-2 text-sm text-gray-500">
             <div className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></div>
@@ -300,15 +379,15 @@ export default function RealTimeFeed() {
           {filteredItems.map(item => (
             <div 
               key={item.id} 
-              className={`flex items-start space-x-3 p-3 rounded-lg border ${getTypeColor(item.type)} animate-slide-up`}
+              className={`flex items-start space-x-2 sm:space-x-3 p-3 rounded-lg border ${getTypeColor(item.type)} animate-slide-up`}
             >
               <div className="flex-shrink-0 mt-1">
                 {getTypeIcon(item.type)}
               </div>
               
               <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2 mb-1">
-                  <span className="font-medium text-gray-900">{item.aiTool}</span>
+                <div className="flex flex-wrap items-center space-x-2 mb-1">
+                  <span className="font-medium text-gray-900 text-sm sm:text-base">{item.aiTool}</span>
                   {getSeverityBadge(item.severity)}
                   <span className="text-xs text-gray-500">
                     {formatTime(item.timestamp)}
@@ -324,21 +403,21 @@ export default function RealTimeFeed() {
                 {/* Show voting for user reports */}
                 {item.type === 'user-report' && item.report && (
                   <div className="mt-3 pt-3 border-t border-gray-200">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-1 gap-3 sm:gap-4 text-sm">
                       <div>
-                        <p className="text-gray-600 mb-1"><strong>Query:</strong></p>
-                        <p className="text-gray-900 bg-gray-50 p-2 rounded">{item.report.userQuery}</p>
+                        <p className="text-gray-600 mb-1 text-xs sm:text-sm"><strong>Query:</strong></p>
+                        <p className="text-gray-900 bg-gray-50 p-2 rounded text-xs sm:text-sm">{item.report.userQuery}</p>
                       </div>
                       <div>
-                        <p className="text-gray-600 mb-1"><strong>AI Response:</strong></p>
-                        <p className="text-gray-900 bg-error-50 p-2 rounded border-l-4 border-error-500">{item.report.aiResponse}</p>
+                        <p className="text-gray-600 mb-1 text-xs sm:text-sm"><strong>AI Response:</strong></p>
+                        <p className="text-gray-900 bg-error-50 p-2 rounded border-l-4 border-error-500 text-xs sm:text-sm">{item.report.aiResponse}</p>
                       </div>
                     </div>
                     <div className="mt-3">
-                      <p className="text-gray-600 mb-1"><strong>Corrected Answer:</strong></p>
-                      <p className="text-gray-900 bg-success-50 p-2 rounded border-l-4 border-success-500">{item.report.correctedAnswer}</p>
+                      <p className="text-gray-600 mb-1 text-xs sm:text-sm"><strong>Corrected Answer:</strong></p>
+                      <p className="text-gray-900 bg-success-50 p-2 rounded border-l-4 border-success-500 text-xs sm:text-sm">{item.report.correctedAnswer}</p>
                     </div>
-                    <div className="mt-3 flex items-center justify-between">
+                    <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                       <VotingComponent
                         id={item.report.id}
                         initialUpvotes={item.report.upvotes}
@@ -376,9 +455,9 @@ export default function RealTimeFeed() {
       />
 
       {/* Connection Status */}
-      <div className="card">
+      <div className="card p-4 sm:p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Connection Status</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div className="flex items-center space-x-3">
             <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-success-500' : 'bg-error-500'}`}></div>
             <span className="text-sm font-medium">WebSocket Connection</span>

@@ -64,12 +64,12 @@ export default function VotingComponent({
   const isNegative = totalVotes < 0
 
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
       {/* Upvote Button */}
       <button
         onClick={() => handleVote('upvote')}
         disabled={isVoting}
-        className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+        className={`flex items-center justify-center space-x-2 px-2 sm:px-3 py-2 rounded-lg transition-colors text-sm ${
           currentVote === 'upvote'
             ? 'bg-success-100 text-success-700 border border-success-200'
             : 'text-gray-600 hover:text-success-600 hover:bg-success-50'
@@ -80,7 +80,7 @@ export default function VotingComponent({
       </button>
 
       {/* Vote Score */}
-      <div className={`flex items-center space-x-1 px-2 py-1 rounded-lg ${
+      <div className={`flex items-center justify-center space-x-1 px-2 py-2 rounded-lg ${
         isPositive 
           ? 'bg-success-100 text-success-700' 
           : isNegative 
@@ -99,7 +99,7 @@ export default function VotingComponent({
       <button
         onClick={() => handleVote('downvote')}
         disabled={isVoting}
-        className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+        className={`flex items-center justify-center space-x-2 px-2 sm:px-3 py-2 rounded-lg transition-colors text-sm ${
           currentVote === 'downvote'
             ? 'bg-error-100 text-error-700 border border-error-200'
             : 'text-gray-600 hover:text-error-600 hover:bg-error-50'

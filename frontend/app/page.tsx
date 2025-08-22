@@ -4,11 +4,9 @@ import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Sidebar from '@/components/Sidebar'
 import Dashboard from '@/components/Dashboard'
-import MistakeAnalysis from '@/components/MistakeAnalysis'
-import RealTimeFeed from '@/components/RealTimeFeed'
-import AIComparison from '@/components/AIComparison'
 import UserDashboard from '@/components/UserDashboard'
 import AuthModal from '@/components/AuthModal'
+import { Menu, X } from 'lucide-react'
 
 interface User {
   name: string
@@ -19,11 +17,11 @@ interface User {
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('dashboard')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [isPublicMode, setIsPublicMode] = useState(true)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     // Check if user is logged in (simulate localStorage check)
@@ -76,47 +74,46 @@ export default function Home() {
     localStorage.removeItem('antiAIUser')
   }
 
-  const renderContent = () => {
-    if (isPublicMode) {
-      // Public dashboard for all users
-      switch (activeTab) {
-        case 'dashboard':
-          return <Dashboard isPublicMode={true} onSignUp={() => setShowAuthModal(true)} />
-        case 'mistakes':
-          return <MistakeAnalysis />
-        case 'realtime':
-          return <RealTimeFeed />
-        case 'comparison':
-          return <AIComparison />
-        default:
-          return <Dashboard isPublicMode={true} onSignUp={() => setShowAuthModal(true)} />
-      }
-    } else {
-      // User-specific dashboard
-      switch (activeTab) {
-        case 'dashboard':
-          return user ? <UserDashboard user={user} /> : <Dashboard isPublicMode={false} />
-        case 'mistakes':
-          return <MistakeAnalysis />
-        case 'realtime':
-          return <RealTimeFeed />
-        case 'comparison':
-          return <AIComparison />
-        default:
-          return user ? <UserDashboard user={user} /> : <Dashboard isPublicMode={false} />
-      }
-    }
-  }
-
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab}
-        isAuthenticated={isAuthenticated}
-        isPublicMode={isPublicMode}
-        onToggleMode={() => setIsPublicMode(!isPublicMode)}
-      />
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setIsMobileMenuOpen(false)} />
+          <div className="fixed left-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-xl">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <Sidebar 
+              activeTab="dashboard"
+              setActiveTab={() => {}}
+              isAuthenticated={isAuthenticated}
+              isPublicMode={isPublicMode}
+              onToggleMode={() => setIsPublicMode(!isPublicMode)}
+              isMobile={true}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block">
+        <Sidebar 
+          activeTab="dashboard"
+          setActiveTab={() => {}}
+          isAuthenticated={isAuthenticated}
+          isPublicMode={isPublicMode}
+          onToggleMode={() => setIsPublicMode(!isPublicMode)}
+          isMobile={false}
+        />
+      </div>
+
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header 
           isAuthenticated={isAuthenticated}
@@ -125,9 +122,15 @@ export default function Home() {
           onLogout={handleLogout}
           isPublicMode={isPublicMode}
           onToggleMode={() => setIsPublicMode(!isPublicMode)}
+          onMobileMenuToggle={() => setIsMobileMenuOpen(true)}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-          {renderContent()}
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-3 sm:p-6">
+          {/* Main dashboard content - no more routing logic */}
+          {isPublicMode ? (
+            <Dashboard isPublicMode={true} onSignUp={() => setShowAuthModal(true)} />
+          ) : (
+            user ? <UserDashboard user={user} /> : <Dashboard isPublicMode={false} />
+          )}
         </main>
       </div>
       

@@ -131,149 +131,156 @@ export default function MistakeAnalysis() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Mistake Analysis</h1>
-          <p className="text-gray-600 mt-1">Comprehensive analysis of AI tool mistakes and error patterns</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Mistake Analysis</h1>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">
+            Track and analyze AI tool mistakes and errors
+          </p>
         </div>
-        <div className="flex space-x-3">
-          <button className="btn-secondary">
-            <Download className="h-4 w-4 mr-2" />
-            Export Data
-          </button>
-          <button 
-            onClick={() => setShowReportModal(true)}
-            className="btn-primary"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Report New Mistake
-          </button>
-        </div>
+        <button
+          onClick={() => setShowReportModal(true)}
+          className="btn-primary flex items-center space-x-2 w-full sm:w-auto justify-center"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Report Mistake</span>
+        </button>
       </div>
 
-      {/* Filters */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-          <Filter className="h-5 w-5 text-gray-400" />
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Mistake Category</label>
-            <select 
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="input-field"
-            >
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name} ({category.count})
-                </option>
-              ))}
-            </select>
+      {/* Filters and Search */}
+      <div className="card p-4 sm:p-6">
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+            <div className="flex items-center space-x-2">
+              <button className="btn-secondary flex items-center space-x-2">
+                <Filter className="h-4 w-4" />
+                <span className="hidden sm:inline">Clear Filters</span>
+              </button>
+              <button className="btn-secondary flex items-center space-x-2">
+                <Download className="h-4 w-4" />
+                <span className="hidden sm:inline">Export</span>
+              </button>
+            </div>
           </div>
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">AI Tool</label>
-            <select 
-              value={selectedAI}
-              onChange={(e) => setSelectedAI(e.target.value)}
-              className="input-field"
-            >
-              {aiTools.map(tool => (
-                <option key={tool.id} value={tool.id}>
-                  {tool.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Search mistakes..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full"
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+              >
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name} ({category.count})
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">AI Tool</label>
+              <select
+                value={selectedAI}
+                onChange={(e) => setSelectedAI(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+              >
+                {aiTools.map(tool => (
+                  <option key={tool.id} value={tool.id}>{tool.name}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="sm:col-span-2 lg:col-span-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <input
+                  type="text"
+                  placeholder="Search mistakes..."
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full text-sm"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Category Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         {categories.map(category => (
-          <div key={category.id} className="card text-center">
-            <div className={`w-12 h-12 ${category.color} rounded-lg mx-auto mb-3 flex items-center justify-center`}>
-              <AlertTriangle className="h-6 w-6 text-white" />
+          <div key={category.id} className="card p-3 sm:p-4 text-center">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 ${category.color} rounded-lg mx-auto mb-2 sm:mb-3 flex items-center justify-center`}>
+              <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
-            <h4 className="font-semibold text-gray-900">{category.name}</h4>
-            <p className="text-2xl font-bold text-gray-900">{category.count}</p>
-            <p className="text-sm text-gray-500">mistakes</p>
+            <h4 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">{category.name}</h4>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900">{category.count}</p>
+            <p className="text-xs sm:text-sm text-gray-500">mistakes</p>
           </div>
         ))}
       </div>
 
       {/* Mistakes List */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-6">
+      <div className="card p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
           <h3 className="text-lg font-semibold text-gray-900">Recent Mistakes</h3>
-          <div className="flex items-center space-x-4 text-sm text-gray-600">
+          <div className="flex items-center space-x-3 sm:space-x-4 text-sm text-gray-600">
             <span className="flex items-center">
               <CheckCircle className="h-4 w-4 mr-1 text-success-600" />
-              32 Resolved
+              <span className="hidden sm:inline">32 Resolved</span>
+              <span className="sm:hidden">32 ✓</span>
             </span>
             <span className="flex items-center">
               <Clock className="h-4 w-4 mr-1 text-warning-600" />
-              15 Pending
+              <span className="hidden sm:inline">15 Pending</span>
+              <span className="sm:hidden">15 ⏳</span>
             </span>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {mistakes.map(mistake => (
-            <div key={mistake.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <div className={`w-3 h-3 ${getCategoryColor(mistake.category)} rounded-full`}></div>
-                    <span className="font-medium text-gray-900">{mistake.aiTool}</span>
+            <div key={mistake.id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:bg-gray-50 transition-colors">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-3 sm:space-y-0">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center space-x-2 sm:space-x-3 mb-2">
+                    <div className={`w-3 h-3 ${getCategoryColor(mistake.category)} rounded-full flex-shrink-0`}></div>
+                    <span className="font-medium text-gray-900 text-sm sm:text-base">{mistake.aiTool}</span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getSeverityColor(mistake.severity)}`}>
                       {mistake.severity.toUpperCase()}
                     </span>
                     {getStatusIcon(mistake.status)}
                   </div>
                   
-                  <h4 className="font-semibold text-gray-900 mb-2">{mistake.description}</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">{mistake.description}</h4>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 text-sm space-y-3 lg:space-y-0">
                     <div>
-                      <p className="text-gray-600 mb-1"><strong>User Query:</strong></p>
-                      <p className="text-gray-900 bg-gray-50 p-2 rounded">{mistake.userQuery}</p>
+                      <p className="text-gray-600 mb-1 text-xs sm:text-sm"><strong>User Query:</strong></p>
+                      <p className="text-gray-900 bg-gray-50 p-2 rounded text-xs sm:text-sm">{mistake.userQuery}</p>
                     </div>
                     <div>
-                      <p className="text-gray-600 mb-1"><strong>AI Response:</strong></p>
-                      <p className="text-gray-900 bg-error-50 p-2 rounded border-l-4 border-error-500">{mistake.aiResponse}</p>
+                      <p className="text-gray-600 mb-1 text-xs sm:text-sm"><strong>AI Response:</strong></p>
+                      <p className="text-gray-900 bg-error-50 p-2 rounded border-l-4 border-error-500 text-xs sm:text-sm">{mistake.aiResponse}</p>
                     </div>
                   </div>
                   
                   <div className="mt-3">
-                    <p className="text-gray-600 mb-1"><strong>Corrected Answer:</strong></p>
-                    <p className="text-gray-900 bg-success-50 p-2 rounded border-l-4 border-success-500">{mistake.correctedAnswer}</p>
+                    <p className="text-gray-600 mb-1 text-xs sm:text-sm"><strong>Corrected Answer:</strong></p>
+                    <p className="text-gray-900 bg-success-50 p-2 rounded border-l-4 border-success-500 text-xs sm:text-sm">{mistake.correctedAnswer}</p>
                   </div>
                   
-                  <div className="flex items-center justify-between mt-3 text-sm text-gray-500">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-3 text-xs sm:text-sm text-gray-500 space-y-1 sm:space-y-0">
                     <span>Impact: {mistake.impact}</span>
                     <span>{new Date(mistake.timestamp).toLocaleString()}</span>
                   </div>
                 </div>
                 
-                <div className="ml-4 flex space-x-2">
+                <div className="flex sm:flex-col space-x-2 sm:space-x-0 sm:space-y-2 sm:ml-4">
                   <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                     <Eye className="h-4 w-4" />
                   </button>
