@@ -91,8 +91,6 @@ export default function Home() {
               </button>
             </div>
             <Sidebar 
-              activeTab="dashboard"
-              setActiveTab={() => {}}
               isAuthenticated={isAuthenticated}
               isPublicMode={isPublicMode}
               onToggleMode={() => setIsPublicMode(!isPublicMode)}
@@ -105,8 +103,6 @@ export default function Home() {
       {/* Desktop Sidebar */}
       <div className="hidden lg:block">
         <Sidebar 
-          activeTab="dashboard"
-          setActiveTab={() => {}}
           isAuthenticated={isAuthenticated}
           isPublicMode={isPublicMode}
           onToggleMode={() => setIsPublicMode(!isPublicMode)}
