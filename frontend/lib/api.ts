@@ -198,6 +198,37 @@ class ApiClient {
   async healthCheck() {
     return this.request('/api/health')
   }
+
+  // AI Tools methods
+  async getAITools(params?: {
+    category?: string;
+    status?: string;
+    sort?: string;
+    limit?: number;
+  }) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value.toString());
+        }
+      });
+    }
+    
+    return this.request(`/api/ai-tools?${searchParams.toString()}`);
+  }
+
+  async getTopAITools(limit: number = 10) {
+    return this.request(`/api/ai-tools/top?limit=${limit}`);
+  }
+
+  async getTrendingAITools(limit: number = 10) {
+    return this.request(`/api/ai-tools/trending?limit=${limit}`);
+  }
+
+  async getAIToolById(id: string) {
+    return this.request(`/api/ai-tools/${id}`);
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE)

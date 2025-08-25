@@ -5,14 +5,8 @@ import AIComparison from '@/components/AIComparison'
 import Header from '@/components/Header'
 import Sidebar from '@/components/Sidebar'
 import { Menu, X } from 'lucide-react'
+import { User } from '@/lib/types'
 
-interface User {
-  name: string
-  email: string
-  joinDate: string
-  totalQueries: number
-  preferredAI: string
-}
 
 export default function ComparisonPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)

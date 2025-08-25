@@ -5,14 +5,7 @@ import RealTimeFeed from '@/components/RealTimeFeed'
 import Header from '@/components/Header'
 import Sidebar from '@/components/Sidebar'
 import { Menu, X } from 'lucide-react'
-
-interface User {
-  name: string
-  email: string
-  joinDate: string
-  totalQueries: number
-  preferredAI: string
-}
+import { User } from '@/lib/types'
 
 export default function RealtimePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)

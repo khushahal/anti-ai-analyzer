@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -15,103 +15,86 @@ import {
   Eye
 } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts'
+import { AITool } from '../lib/types'
+import apiClient from '../lib/api'
 
 export default function AIComparison() {
   const [selectedMetric, setSelectedMetric] = useState('accuracy')
   const [sortBy, setSortBy] = useState('accuracy')
+  const [aiTools, setAiTools] = useState<AITool[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const aiTools = [
-    {
-      name: 'GPT-4',
-      accuracy: 94.2,
-      responseTime: 1.8,
-      mistakeRate: 2.1,
-      costPerQuery: 0.03,
-      reliability: 98.5,
-      biasScore: 8.7,
-      contextUnderstanding: 9.2,
-      factualAccuracy: 9.4,
-      logicalReasoning: 9.1,
-      creativity: 9.3,
-      efficiency: 8.9,
-      trend: 'up',
-      status: 'optimal',
-      totalQueries: 1250000,
-      mistakes: 47
-    },
-    {
-      name: 'Claude-3',
-      accuracy: 92.8,
-      responseTime: 2.1,
-      mistakeRate: 2.8,
-      costPerQuery: 0.025,
-      reliability: 97.8,
-      biasScore: 9.1,
-      contextUnderstanding: 9.4,
-      factualAccuracy: 9.2,
-      logicalReasoning: 9.3,
-      creativity: 8.8,
-      efficiency: 8.7,
-      trend: 'up',
-      status: 'optimal',
-      totalQueries: 980000,
-      mistakes: 52
-    },
-    {
-      name: 'Gemini Pro',
-      accuracy: 89.5,
-      responseTime: 1.5,
-      mistakeRate: 3.2,
-      costPerQuery: 0.02,
-      reliability: 96.2,
-      biasScore: 8.3,
-      contextUnderstanding: 8.8,
-      factualAccuracy: 8.9,
-      logicalReasoning: 8.7,
-      creativity: 9.0,
-      efficiency: 9.2,
-      trend: 'down',
-      status: 'warning',
-      totalQueries: 750000,
-      mistakes: 68
-    },
-    {
-      name: 'Llama-2',
-      accuracy: 87.3,
-      responseTime: 2.8,
-      mistakeRate: 4.1,
-      costPerQuery: 0.015,
-      reliability: 94.5,
-      biasScore: 7.8,
-      contextUnderstanding: 8.2,
-      factualAccuracy: 8.5,
-      logicalReasoning: 8.3,
-      creativity: 8.6,
-      efficiency: 7.9,
-      trend: 'stable',
-      status: 'warning',
-      totalQueries: 520000,
-      mistakes: 89
-    },
-    {
-      name: 'PaLM-2',
-      accuracy: 85.1,
-      responseTime: 3.2,
-      mistakeRate: 4.8,
-      costPerQuery: 0.018,
-      reliability: 93.1,
-      biasScore: 8.1,
-      contextUnderstanding: 8.0,
-      factualAccuracy: 8.3,
-      logicalReasoning: 8.1,
-      creativity: 8.4,
-      efficiency: 7.6,
-      trend: 'up',
-      status: 'optimal',
-      totalQueries: 380000,
-      mistakes: 112
+  useEffect(() => {
+    const fetchAITools = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const response = await apiClient.getAITools({ status: 'active', sort: 'accuracy' })
+        if (response.success && response.data) {
+          setAiTools(response.data)
+        } else {
+          setError('Failed to fetch AI tools')
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch AI tools')
+      } finally {
+        setIsLoading(false)
+      }
     }
-  ]
+
+    fetchAITools()
+  }, [])
+
+  // Transform database data to match component expectations
+  const transformedAiTools = aiTools.map(tool => ({
+    name: tool.name,
+    accuracy: tool.performance.current.accuracy,
+    responseTime: tool.performance.current.responseTime,
+    mistakeRate: tool.stats.mistakeRate,
+    costPerQuery: tool.pricing.input,
+    reliability: tool.performance.current.reliability,
+    biasScore: 8.5, // Default value since not in DB
+    contextUnderstanding: 9.0, // Default value since not in DB
+    factualAccuracy: tool.performance.current.accuracy / 10, // Convert percentage to 0-10 scale
+    logicalReasoning: 9.0, // Default value since not in DB
+    creativity: 8.8, // Default value since not in DB
+    efficiency: 9.0, // Default value since not in DB
+    trend: tool.stats.totalQueries > 1000000 ? 'up' : tool.stats.totalQueries > 500000 ? 'stable' : 'down',
+    status: tool.stats.mistakeRate < 3 ? 'optimal' : tool.stats.mistakeRate < 5 ? 'warning' : 'critical',
+    totalQueries: tool.stats.totalQueries,
+    mistakes: tool.stats.totalMistakes
+  }))
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600 font-medium">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Use transformed data instead of hardcoded data
+  const displayAiTools = transformedAiTools
 
   const metrics = [
     { id: 'accuracy', name: 'Accuracy', icon: Target },
@@ -121,17 +104,16 @@ export default function AIComparison() {
     { id: 'reliability', name: 'Reliability', icon: CheckCircle }
   ]
 
-  const radarData = aiTools.map(tool => ({
+  const radarData = displayAiTools.map(tool => ({
     name: tool.name,
-    Bias: tool.biasScore,
-    Context: tool.contextUnderstanding,
-    Factual: tool.factualAccuracy,
-    Logical: tool.logicalReasoning,
-    Creativity: tool.creativity,
-    Efficiency: tool.efficiency
+    Accuracy: tool.accuracy,
+    ResponseTime: tool.responseTime,
+    MistakeRate: tool.mistakeRate,
+    CostPerQuery: tool.costPerQuery,
+    Reliability: tool.reliability
   }))
 
-  const sortedTools = [...aiTools].sort((a, b) => {
+  const sortedTools = [...displayAiTools].sort((a, b) => {
     const aValue = a[sortBy as keyof typeof a] as number
     const bValue = b[sortBy as keyof typeof b] as number
     return sortBy === 'responseTime' || sortBy === 'mistakeRate' || sortBy === 'costPerQuery' 
@@ -285,7 +267,7 @@ export default function AIComparison() {
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">{tool.name}</div>
-                        <div className="text-sm text-gray-500">{tool.totalQueries.toLocaleString()} queries</div>
+                        <div className="text-sm text-gray-500">{tool.totalQueries?.toLocaleString() || '0'} queries</div>
                       </div>
                     </div>
                   </td>

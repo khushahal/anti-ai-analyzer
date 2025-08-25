@@ -1,10 +1,11 @@
 "use client";
 
+import { User } from "@/lib/types";
 import {
   Bell,
   Search,
   Settings,
-  User,
+  User as UserIcon,
   LogIn,
   LogOut,
   Globe,
@@ -13,17 +14,11 @@ import {
   Coffee,
 } from "lucide-react";
 
-interface User {
-  name: string;
-  email: string;
-  joinDate: string;
-  totalQueries: number;
-  preferredAI: string;
-}
+
 
 interface HeaderProps {
   isAuthenticated?: boolean;
-  user?: User | null;
+  user: User | null;
   onLogin?: () => void;
   onLogout?: () => void;
   isPublicMode?: boolean;
@@ -108,13 +103,13 @@ export default function Header({
             <div className="flex items-center space-x-1 sm:space-x-2">
               {/* User info - Simplified on mobile */}
               <button className="hidden sm:flex items-center space-x-2 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                <User className="h-5 w-5" />
+                <UserIcon className="h-5 w-5" />
                 <span className="font-medium">{user?.name || "User"}</span>
               </button>
 
               {/* Mobile user button */}
               <button className="sm:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                <User className="h-5 w-5" />
+                <UserIcon className="h-5 w-5" />
               </button>
 
               <button
