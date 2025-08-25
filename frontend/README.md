@@ -1,4 +1,4 @@
-# Anti-AI Analyzer
+# AI Analyzer
 
 A comprehensive web application for analyzing AI tools, detecting mistakes, and comparing performance in real-time.
 

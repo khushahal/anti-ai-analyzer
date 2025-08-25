@@ -1,7 +1,7 @@
 {
   "name": "anti-ai-backend",
   "version": "1.0.0",
-  "description": "Backend API for Anti-AI Analyzer",
+  "description": "Backend API for AI Analyzer",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

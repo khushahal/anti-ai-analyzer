@@ -6,7 +6,14 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const http = require('http');
 const socketIo = require('socket.io');
-require('dotenv').config({ path: './config.env' });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, 'config.env') });
+
+// Debug: Check if environment variables are loaded
+console.log('🔧 Environment Check:');
+console.log('   MONGODB_URI:', process.env.MONGODB_URI ? '✅ Loaded' : '❌ Missing');
+console.log('   NODE_ENV:', process.env.NODE_ENV || 'Not set');
+console.log('   JWT_SECRET:', process.env.JWT_SECRET ? '✅ Loaded' : '❌ Missing');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -29,13 +36,63 @@ const io = socketIo(server, {
   }
 });
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ MongoDB connected successfully'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+// Connect to MongoDB with better error handling
+const connectDB = async () => {
+  try {
+    console.log('🔗 Attempting to connect to MongoDB...');
+    console.log('   URI:', process.env.MONGODB_URI ? '✅ Present' : '❌ Missing');
+    
+    // Force use of Atlas URI for now
+    const mongoUri = 'mongodb+srv://khushahaltamara:aMfwNUX0xuw1nVrQ@aianalyzer.hlp6reo.mongodb.net/anti-ai-analyzer?retryWrites=true&w=majority&appName=aianalyzer';
+    
+    console.log('   Environment MONGODB_URI:', process.env.MONGODB_URI);
+    console.log('   Forced Atlas URI:', mongoUri);
+    
+    if (!mongoUri) {
+      throw new Error('MONGDB_URI environment variable is not set');
+    }
+    
+    console.log('   URI Preview:', mongoUri.substring(0, 50) + '...');
+    
+    const conn = await mongoose.connect(mongoUri, {
+      // Modern MongoDB connection options
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+    
+    console.log('✅ MongoDB connected successfully');
+    console.log(`🌐 Database: ${conn.connection.name}`);
+    console.log(`🔗 Host: ${conn.connection.host}`);
+    console.log(`📊 Port: ${conn.connection.port}`);
+    
+    // Handle connection events
+    mongoose.connection.on('error', (err) => {
+      console.error('❌ MongoDB connection error:', err);
+    });
+    
+    mongoose.connection.on('disconnected', () => {
+      console.log('⚠️  MongoDB disconnected');
+    });
+    
+    mongoose.connection.on('reconnected', () => {
+      console.log('🔄 MongoDB reconnected');
+    });
+    
+  } catch (error) {
+    console.error('❌ MongoDB connection failed:', error.message);
+    console.error('💡 Please check:');
+    console.error('   1. MongoDB Atlas is running and accessible');
+    console.error('   2. Connection string is correct');
+    console.error('   3. Network allows connection to MongoDB Atlas');
+    console.error('   4. Database user has correct permissions');
+    console.error('   5. IP address is whitelisted in Atlas');
+    process.exit(1);
+  }
+};
+
+// Connect to database
+connectDB();
 
 // Security middleware
 app.use(helmet());

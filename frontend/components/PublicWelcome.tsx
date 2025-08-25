@@ -11,7 +11,7 @@ export default function PublicWelcome({ onSignUp }: PublicWelcomeProps) {
     <div className="bg-gradient-to-r from-primary-600 via-purple-600 to-primary-700 rounded-lg p-4 sm:p-6 text-white mb-4 sm:mb-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
         <div className="flex-1">
-          <h2 className="text-xl sm:text-2xl font-bold mb-2">Welcome to Anti-AI Analyzer!</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-2">Welcome to AI Analyzer!</h2>
           <p className="text-primary-100 mb-4 text-sm sm:text-base">
             You're currently viewing public data. Sign up to get personalized insights and track your own AI usage patterns.
           </p>

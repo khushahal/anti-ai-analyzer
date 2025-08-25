@@ -1,6 +1,6 @@
 # Vercel Deployment Guide
 
-This guide will help you deploy the Anti-AI Analyzer application to Vercel.
+This guide will help you deploy the AI Analyzer application to Vercel.
 
 ## Prerequisites
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Coffee, Heart, Globe, CreditCard } from 'lucide-react';
+import config from '@/lib/config';
 
 interface CoffeeModalProps {
   isOpen: boolean;
@@ -54,7 +55,7 @@ const CoffeeModal: React.FC<CoffeeModalProps> = ({ isOpen, onClose }) => {
 
     try {
       // Create payment order
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payments/create-order`, {
+      const response = await fetch(`${config.api.baseUrl}/api/payments/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,10 +87,10 @@ const CoffeeModal: React.FC<CoffeeModalProps> = ({ isOpen, onClose }) => {
 
   const initializeRazorpay = (orderData: PaymentOrder) => {
     const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      key: config.razorpay.keyId,
       amount: orderData.amount,
       currency: orderData.currency,
-      name: 'Anti-AI Analyzer',
+      name: 'AI Analyzer',
       description: 'Buy me a coffee! ☕',
       order_id: orderData.id,
       prefill: {
@@ -105,7 +106,7 @@ const CoffeeModal: React.FC<CoffeeModalProps> = ({ isOpen, onClose }) => {
       handler: async function (response: any) {
         try {
           // Verify payment
-          const verifyResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payments/verify`, {
+          const verifyResponse = await fetch(`${config.api.baseUrl}/api/payments/verify`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

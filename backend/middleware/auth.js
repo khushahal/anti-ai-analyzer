@@ -125,10 +125,13 @@ const generateToken = (id) => {
 const sendTokenResponse = (user, statusCode, res) => {
   const token = generateToken(user._id);
 
+  // Calculate expiry date properly
+  const expiryDays = process.env.JWT_EXPIRE ? parseInt(process.env.JWT_EXPIRE) : 7;
+  const expiryDate = new Date();
+  expiryDate.setDate(expiryDate.getDate() + expiryDays);
+
   const options = {
-    expires: new Date(
-      Date.now() + (process.env.JWT_EXPIRE || 7 * 24 * 60 * 60 * 1000)
-    ),
+    expires: expiryDate,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict'

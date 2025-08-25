@@ -21,11 +21,29 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 interface UserDashboardProps {
   user: {
+    _id: string
     name: string
     email: string
-    joinDate: string
-    totalQueries: number
-    preferredAI: string
+    role: string
+    isVerified: boolean
+    avatar: string
+    preferences: {
+      theme: string
+      notifications: {
+        email: boolean
+        push: boolean
+      }
+      preferredAI: string
+    }
+    stats: {
+      totalQueries: number
+      reportsSubmitted: number
+      reportsVerified: number
+      totalVotes: number
+    }
+    lastLogin: string
+    createdAt: string
+    updatedAt: string
   }
 }
 
@@ -73,7 +91,7 @@ export default function UserDashboard({ user }: UserDashboardProps) {
     },
     {
       title: 'Total Queries',
-      value: user.totalQueries.toString(),
+      value: user.stats.totalQueries.toString(),
       change: '+12',
       trend: 'up',
       icon: MessageSquare,
@@ -89,7 +107,7 @@ export default function UserDashboard({ user }: UserDashboardProps) {
     },
     {
       title: 'Preferred AI',
-      value: user.preferredAI,
+      value: user.preferences.preferredAI,
       change: 'Most Used',
       trend: 'up',
       icon: Brain,
@@ -150,15 +168,15 @@ export default function UserDashboard({ user }: UserDashboardProps) {
           </div>
           <div>
             <h1 className="text-2xl font-bold">Welcome back, {user.name}!</h1>
-            <p className="text-primary-100">Member since {new Date(user.joinDate).toLocaleDateString()}</p>
+            <p className="text-primary-100">Member since {new Date(user.createdAt).toLocaleDateString()}</p>
             <div className="flex items-center space-x-4 mt-2 text-sm">
               <span className="flex items-center">
                 <MessageSquare className="h-4 w-4 mr-1" />
-                {user.totalQueries} queries made
+                {user.stats.totalQueries} queries made
               </span>
               <span className="flex items-center">
                 <Brain className="h-4 w-4 mr-1" />
-                {user.preferredAI} preferred
+                {user.preferences.preferredAI} preferred
               </span>
             </div>
           </div>

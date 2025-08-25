@@ -324,6 +324,47 @@ router.get('/users', asyncHandler(async (req, res) => {
   });
 }));
 
+// @desc    Update user role (ADMIN ONLY)
+// @route   PUT /api/auth/users/:id/role
+// @access  Private (Admin only)
+router.put('/users/:id/role', [
+  body('role')
+    .isIn(['user', 'moderator', 'admin'])
+    .withMessage('Role must be user, moderator, or admin')
+], asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array()
+    });
+  }
+
+  // Find and update user
+  const user = await User.findByIdAndUpdate(
+    id,
+    { role },
+    { new: true, runValidators: true }
+  ).select('-password -verificationToken -resetPasswordToken');
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: `User role updated to ${role}`,
+    user
+  });
+}));
+
 // @desc    Get user by ID
 
 module.exports = router; 

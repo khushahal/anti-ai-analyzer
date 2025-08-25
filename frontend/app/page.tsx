@@ -55,46 +55,49 @@ export default function Home() {
 
   const handleLogin = async (email: string, password: string) => {
     try {
+      console.log('🔐 Attempting login for:', email)
       const response = await authService.login({ email, password })
       
       if (response.success && response.user) {
+        console.log('✅ Login successful:', response.user.name)
         setUser(response.user)
         setIsAuthenticated(true)
         setIsPublicMode(false)
         setShowAuthModal(false)
       } else {
         // Handle login error
-        console.error('Login failed:', response.message)
-        // You could show a toast notification here
-        alert(response.message || 'Login failed')
+        console.error('❌ Login failed:', response.message)
+        alert(`Login failed: ${response.message || 'Unknown error'}`)
       }
     } catch (error) {
-      console.error('Login error:', error)
-      alert('Login failed. Please try again.')
+      console.error('❌ Login error:', error)
+      alert(`Login failed: ${error instanceof Error ? error.message : 'Network error. Please check if the backend is running.'}`)
     }
   }
 
   const handleRegister = async (name: string, email: string, password: string) => {
     try {
+      console.log('📝 Attempting registration for:', email)
       const response = await authService.register({ name, email, password })
       
       if (response.success && response.user) {
+        console.log('✅ Registration successful:', response.user.name)
         setUser(response.user)
         setIsAuthenticated(true)
         setIsPublicMode(false)
         setShowAuthModal(false)
       } else {
         // Handle registration error
-        console.error('Registration failed:', response.message)
+        console.error('❌ Registration failed:', response.message)
         if (response.errors) {
           alert(`Registration failed: ${response.errors.map(e => e.msg).join(', ')}`)
         } else {
-          alert(response.message || 'Registration failed')
+          alert(`Registration failed: ${response.message || 'Unknown error'}`)
         }
       }
     } catch (error) {
-      console.error('Registration error:', error)
-      alert('Registration failed. Please try again.')
+      console.error('❌ Registration error:', error)
+      alert(`Registration failed: ${error instanceof Error ? error.message : 'Network error. Please check if the backend is running.'}`)
     }
   }
 

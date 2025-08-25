@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'AI Mistake Analysis & Detection - Anti-AI Analyzer',
+  title: 'AI Mistake Analysis & Detection - AI Analyzer',
   description: 'Comprehensive analysis of AI tool mistakes, error patterns, and detection systems. Find factual errors, logical fallacies, bias issues, and context errors in AI responses.',
   keywords: 'AI mistakes, error detection, factual errors, AI bias, logical fallacies, AI analysis, mistake patterns',
   openGraph: {
-    title: 'AI Mistake Analysis & Detection - Anti-AI Analyzer',
+    title: 'AI Mistake Analysis & Detection - AI Analyzer',
     description: 'Comprehensive analysis of AI tool mistakes, error patterns, and detection systems.',
     type: 'website',
     url: 'https://anti-ai-analyzer.com/mistakes',

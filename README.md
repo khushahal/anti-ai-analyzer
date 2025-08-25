@@ -1,4 +1,4 @@
-# 🚀 Anti-AI Analyzer - Full Stack Platform
+# 🚀 AI Analyzer - Full Stack Platform
 
 A comprehensive platform for analyzing AI tools, detecting mistakes, and providing real-time insights with user reporting and voting systems.
 

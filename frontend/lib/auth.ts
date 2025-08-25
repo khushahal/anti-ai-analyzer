@@ -1,12 +1,29 @@
 import apiClient from './api'
 
 export interface User {
-  id: string
+  _id: string
   name: string
   email: string
-  joinDate: string
-  totalQueries: number
-  preferredAI: string
+  role: string
+  isVerified: boolean
+  avatar: string
+  preferences: {
+    theme: string
+    notifications: {
+      email: boolean
+      push: boolean
+    }
+    preferredAI: string
+  }
+  stats: {
+    totalQueries: number
+    reportsSubmitted: number
+    reportsVerified: number
+    totalVotes: number
+  }
+  lastLogin: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface LoginCredentials {
@@ -210,10 +227,10 @@ class AuthService {
       if (!token) return null
 
       const response = await apiClient.getProfile()
-      if (response.success && response.data?.user) {
+      if (response.success && response.data) {
         // Update stored user data
-        localStorage.setItem(this.userKey, JSON.stringify(response.data.user))
-        return response.data.user
+        localStorage.setItem(this.userKey, JSON.stringify(response.data))
+        return response.data
       }
       return null
     } catch (error: any) {
@@ -231,12 +248,12 @@ class AuthService {
     try {
       const response = await apiClient.updateProfile(data)
       
-      if (response.success && response.data?.user) {
+      if (response.success && response.data) {
         // Update stored user data
-        localStorage.setItem(this.userKey, JSON.stringify(response.data.user))
+        localStorage.setItem(this.userKey, JSON.stringify(response.data))
         return {
           success: true,
-          user: response.data.user
+          user: response.data
         }
       } else {
         return {
