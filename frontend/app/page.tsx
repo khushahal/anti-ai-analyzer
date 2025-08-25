@@ -6,72 +6,114 @@ import Sidebar from '@/components/Sidebar'
 import Dashboard from '@/components/Dashboard'
 import UserDashboard from '@/components/UserDashboard'
 import AuthModal from '@/components/AuthModal'
+import CoffeeModal from '@/components/CoffeeModal'
 import { Menu, X } from 'lucide-react'
-
-interface User {
-  name: string
-  email: string
-  joinDate: string
-  totalQueries: number
-  preferredAI: string
-}
+import { authService, User } from '@/lib/auth'
 
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showCoffeeModal, setShowCoffeeModal] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [isPublicMode, setIsPublicMode] = useState(true)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is logged in (simulate localStorage check)
-    const savedUser = localStorage.getItem('antiAIUser')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
-      setIsAuthenticated(true)
-      setIsPublicMode(false)
+    // Check if user is already authenticated
+    const checkAuth = async () => {
+      try {
+        if (authService.isAuthenticated()) {
+          const user = authService.getUser()
+          if (user) {
+            setUser(user)
+            setIsAuthenticated(true)
+            setIsPublicMode(false)
+          } else {
+            // Try to get fresh user data
+            const freshUser = await authService.getProfile()
+            if (freshUser) {
+              setUser(freshUser)
+              setIsAuthenticated(true)
+              setIsPublicMode(false)
+            } else {
+              // Invalid token, clear auth
+              authService.clearAuth()
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Auth check error:', error)
+        authService.clearAuth()
+      } finally {
+        setIsLoading(false)
+      }
     }
+
+    checkAuth()
   }, [])
 
-  const handleLogin = (email: string, password: string) => {
-    // Simulate login - in real app, this would be an API call
-    const mockUser: User = {
-      name: 'John Doe',
-      email: email,
-      joinDate: '2024-01-01',
-      totalQueries: 324,
-      preferredAI: 'GPT-4'
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const response = await authService.login({ email, password })
+      
+      if (response.success && response.user) {
+        setUser(response.user)
+        setIsAuthenticated(true)
+        setIsPublicMode(false)
+        setShowAuthModal(false)
+      } else {
+        // Handle login error
+        console.error('Login failed:', response.message)
+        // You could show a toast notification here
+        alert(response.message || 'Login failed')
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      alert('Login failed. Please try again.')
     }
-    
-    setUser(mockUser)
-    setIsAuthenticated(true)
-    setIsPublicMode(false)
-    localStorage.setItem('antiAIUser', JSON.stringify(mockUser))
-    setShowAuthModal(false)
   }
 
-  const handleRegister = (name: string, email: string, password: string) => {
-    // Simulate registration
-    const mockUser: User = {
-      name: name,
-      email: email,
-      joinDate: new Date().toISOString().split('T')[0],
-      totalQueries: 0,
-      preferredAI: 'GPT-4'
+  const handleRegister = async (name: string, email: string, password: string) => {
+    try {
+      const response = await authService.register({ name, email, password })
+      
+      if (response.success && response.user) {
+        setUser(response.user)
+        setIsAuthenticated(true)
+        setIsPublicMode(false)
+        setShowAuthModal(false)
+      } else {
+        // Handle registration error
+        console.error('Registration failed:', response.message)
+        if (response.errors) {
+          alert(`Registration failed: ${response.errors.map(e => e.msg).join(', ')}`)
+        } else {
+          alert(response.message || 'Registration failed')
+        }
+      }
+    } catch (error) {
+      console.error('Registration error:', error)
+      alert('Registration failed. Please try again.')
     }
-    
-    setUser(mockUser)
-    setIsAuthenticated(true)
-    setIsPublicMode(false)
-    localStorage.setItem('antiAIUser', JSON.stringify(mockUser))
-    setShowAuthModal(false)
   }
 
   const handleLogout = () => {
+    authService.logout()
     setUser(null)
     setIsAuthenticated(false)
     setIsPublicMode(true)
-    localStorage.removeItem('antiAIUser')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -119,6 +161,7 @@ export default function Home() {
           isPublicMode={isPublicMode}
           onToggleMode={() => setIsPublicMode(!isPublicMode)}
           onMobileMenuToggle={() => setIsMobileMenuOpen(true)}
+          onCoffeeClick={() => setShowCoffeeModal(true)}
         />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-3 sm:p-6">
           {/* Main dashboard content - no more routing logic */}
@@ -135,6 +178,11 @@ export default function Home() {
         onClose={() => setShowAuthModal(false)}
         onLogin={handleLogin}
         onRegister={handleRegister}
+      />
+      
+      <CoffeeModal
+        isOpen={showCoffeeModal}
+        onClose={() => setShowCoffeeModal(false)}
       />
     </div>
   )

@@ -14,6 +14,7 @@ const userRoutes = require('./routes/users');
 const mistakeRoutes = require('./routes/mistakes');
 const aiToolsRoutes = require('./routes/aiTools');
 const analyticsRoutes = require('./routes/analytics');
+const paymentRoutes = require('./routes/payments');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -76,6 +77,7 @@ app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/mistakes', mistakeRoutes);
 app.use('/api/ai-tools', aiToolsRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {

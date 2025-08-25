@@ -1,34 +1,50 @@
-'use client'
+"use client";
 
-import { Bell, Search, Settings, User, LogIn, LogOut, Globe, UserCheck, Menu } from 'lucide-react'
+import {
+  Bell,
+  Search,
+  Settings,
+  User,
+  LogIn,
+  LogOut,
+  Globe,
+  UserCheck,
+  Menu,
+  Coffee,
+} from "lucide-react";
 
 interface User {
-  name: string
-  email: string
-  joinDate: string
-  totalQueries: number
-  preferredAI: string
+  name: string;
+  email: string;
+  joinDate: string;
+  totalQueries: number;
+  preferredAI: string;
 }
 
 interface HeaderProps {
-  isAuthenticated?: boolean
-  user?: User | null
-  onLogin?: () => void
-  onLogout?: () => void
-  isPublicMode?: boolean
-  onToggleMode?: () => void
-  onMobileMenuToggle?: () => void
+  isAuthenticated?: boolean;
+  user?: User | null;
+  onLogin?: () => void;
+  onLogout?: () => void;
+  isPublicMode?: boolean;
+  onToggleMode?: () => void;
+  onMobileMenuToggle?: () => void;
+  onCoffeeClick?: () => void;
 }
 
-export default function Header({ 
-  isAuthenticated = false, 
-  user, 
-  onLogin, 
-  onLogout, 
-  isPublicMode = true, 
+export default function Header({
+  isAuthenticated = false,
+  user,
+  onLogin,
+  onLogout,
+  isPublicMode = true,
   onToggleMode,
-  onMobileMenuToggle
+  onMobileMenuToggle,
+  onCoffeeClick,
 }: HeaderProps) {
+  // Debug log
+  console.log("Header rendered with onCoffeeClick:", onCoffeeClick);
+
   return (
     <header className="bg-white border-b border-gray-200 px-3 sm:px-6 py-4">
       <div className="flex items-center justify-between">
@@ -44,7 +60,7 @@ export default function Header({
           <h1 className="text-lg sm:text-2xl font-bold text-gradient">
             Anti-AI Analyzer
           </h1>
-          
+
           {/* Search Bar - Hidden on mobile, visible on tablet+ */}
           <div className="hidden sm:block relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -55,7 +71,7 @@ export default function Header({
             />
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-1 sm:space-x-4">
           {/* Notifications - Hidden on mobile */}
           <button className="hidden sm:block relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
@@ -64,14 +80,14 @@ export default function Header({
               3
             </span>
           </button>
-          
+
           {/* Settings - Hidden on mobile */}
           <button className="hidden sm:block p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
             <Settings className="h-5 w-5" />
           </button>
 
           {/* Mode Toggle - Hidden on mobile, shown in sidebar */}
-          <button 
+          <button
             onClick={onToggleMode}
             className="hidden lg:flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
           >
@@ -87,21 +103,21 @@ export default function Header({
               </>
             )}
           </button>
-          
+
           {isAuthenticated ? (
             <div className="flex items-center space-x-1 sm:space-x-2">
               {/* User info - Simplified on mobile */}
               <button className="hidden sm:flex items-center space-x-2 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                 <User className="h-5 w-5" />
-                <span className="font-medium">{user?.name || 'User'}</span>
+                <span className="font-medium">{user?.name || "User"}</span>
               </button>
-              
+
               {/* Mobile user button */}
               <button className="sm:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                 <User className="h-5 w-5" />
               </button>
-              
-              <button 
+
+              <button
                 onClick={onLogout}
                 className="hidden sm:flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
@@ -110,7 +126,7 @@ export default function Header({
               </button>
             </div>
           ) : (
-            <button 
+            <button
               onClick={onLogin}
               className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm sm:text-base"
             >
@@ -118,9 +134,24 @@ export default function Header({
               <span className="font-medium hidden sm:inline">Sign In</span>
             </button>
           )}
+
+          {/* Buy Me a Coffee Button - Always Visible */}
+          <button
+            onClick={() => {
+              console.log("Coffee button clicked!", onCoffeeClick);
+              if (onCoffeeClick) onCoffeeClick();
+            }}
+            className="flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 rounded-lg transition-all duration-200 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105 border-2 border-amber-400 hover:border-amber-500 relative z-10"
+            title="Buy me a coffee! ☕"
+            style={{ minWidth: "fit-content" }}
+          >
+            <Coffee className="h-4 w-4 animate-pulse" />
+            <span className="hidden xs:inline font-semibold">Buy Coffee</span>
+            <span className="xs:hidden text-lg">☕</span>
+          </button>
         </div>
       </div>
-      
+
       {/* Mobile Search Bar */}
       <div className="mt-3 sm:hidden">
         <div className="relative">
@@ -133,5 +164,5 @@ export default function Header({
         </div>
       </div>
     </header>
-  )
-} 
+  );
+}

@@ -1,18 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Mail, Lock, User, Eye, EyeOff, Github } from 'lucide-react'
+import { X, Mail, Lock, User, Eye, EyeOff, Github, Loader } from 'lucide-react'
 
 interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
-  onLogin: (email: string, password: string) => void
-  onRegister: (name: string, email: string, password: string) => void
+  onLogin: (email: string, password: string) => Promise<void>
+  onRegister: (name: string, email: string, password: string) => Promise<void>
 }
 
 export default function AuthModal({ isOpen, onClose, onLogin, onRegister }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,17 +23,40 @@ export default function AuthModal({ isOpen, onClose, onLogin, onRegister }: Auth
 
   if (!isOpen) return null
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (isLogin) {
-      onLogin(formData.email, formData.password)
-    } else {
-      onRegister(formData.name, formData.email, formData.password)
+    setError(null)
+    setIsSubmitting(true)
+
+    try {
+      if (isLogin) {
+        await onLogin(formData.email, formData.password)
+      } else {
+        await onRegister(formData.name, formData.email, formData.password)
+      }
+    } catch (error: any) {
+      setError(error.message || 'An error occurred. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+    // Clear error when user starts typing
+    if (error) setError(null)
+  }
+
+  const handleClose = () => {
+    setError(null)
+    setFormData({ name: '', email: '', password: '' })
+    onClose()
+  }
+
+  const switchMode = () => {
+    setIsLogin(!isLogin)
+    setError(null)
+    setFormData({ name: '', email: '', password: '' })
   }
 
   return (
@@ -42,7 +67,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, onRegister }: Auth
             {isLogin ? 'Sign In' : 'Create Account'}
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors p-1"
           >
             <X className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -50,6 +75,13 @@ export default function AuthModal({ isOpen, onClose, onLogin, onRegister }: Auth
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+          {/* Error Display */}
+          {error && (
+            <div className="bg-error-50 border border-error-200 rounded-lg p-3">
+              <p className="text-error-700 text-sm">{error}</p>
+            </div>
+          )}
+
           {!isLogin && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -64,6 +96,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, onRegister }: Auth
                   className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="Enter your full name"
                   required={!isLogin}
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -82,6 +115,7 @@ export default function AuthModal({ isOpen, onClose, onLogin, onRegister }: Auth
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm sm:text-base"
                 placeholder="Enter your email"
                 required
+                disabled={isSubmitting}
               />
             </div>
           </div>
@@ -99,11 +133,13 @@ export default function AuthModal({ isOpen, onClose, onLogin, onRegister }: Auth
                 className="pl-10 pr-10 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm sm:text-base"
                 placeholder="Enter your password"
                 required
+                disabled={isSubmitting}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                disabled={isSubmitting}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -112,9 +148,17 @@ export default function AuthModal({ isOpen, onClose, onLogin, onRegister }: Auth
 
           <button
             type="submit"
-            className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm sm:text-base"
+            disabled={isSubmitting}
+            className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
           >
-            {isLogin ? 'Sign In' : 'Create Account'}
+            {isSubmitting ? (
+              <>
+                <Loader className="h-4 w-4 animate-spin" />
+                <span>{isLogin ? 'Signing In...' : 'Creating Account...'}</span>
+              </>
+            ) : (
+              <span>{isLogin ? 'Sign In' : 'Create Account'}</span>
+            )}
           </button>
 
           <div className="relative">
@@ -129,14 +173,16 @@ export default function AuthModal({ isOpen, onClose, onLogin, onRegister }: Auth
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               type="button"
-              className="flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+              disabled={isSubmitting}
+              className="flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Github className="h-4 w-4 mr-2" />
               GitHub
             </button>
             <button
               type="button"
-              className="flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+              disabled={isSubmitting}
+              className="flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -151,8 +197,9 @@ export default function AuthModal({ isOpen, onClose, onLogin, onRegister }: Auth
           <div className="text-center">
             <button
               type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+              onClick={switchMode}
+              disabled={isSubmitting}
+              className="text-primary-600 hover:text-primary-700 text-sm font-medium disabled:opacity-50"
             >
               {isLogin 
                 ? "Don't have an account? Sign up" 

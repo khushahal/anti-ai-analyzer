@@ -304,4 +304,26 @@ router.put('/reset-password/:token', [
   });
 }));
 
+// @desc    Get all users (DEVELOPMENT ONLY - Remove in production)
+// @route   GET /api/auth/users
+// @access  Public (for development)
+router.get('/users', asyncHandler(async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({
+      success: false,
+      message: 'This endpoint is not available in production'
+    });
+  }
+
+  const users = await User.find({}).select('-password -verificationToken -resetPasswordToken');
+  
+  res.status(200).json({
+    success: true,
+    count: users.length,
+    users: users
+  });
+}));
+
+// @desc    Get user by ID
+
 module.exports = router; 
